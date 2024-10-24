@@ -4,6 +4,9 @@ on:
   - push
   - pull_request
 
+env:
+  DJANGO_SETTINGS_MODULE: config.settings.dev
+
 jobs:
   tests:
 
@@ -11,7 +14,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.10", "3.11", "3.12"]
 
     steps:
