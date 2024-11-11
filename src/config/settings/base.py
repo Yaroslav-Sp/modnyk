@@ -14,7 +14,14 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "common",
+    "products",
+    "orders",
+    "cart",
+    "reviews",
+    "favorites",
 ]
+
+AUTH_USER_MODEL = "accounts.Customer"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
