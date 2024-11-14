@@ -8,7 +8,8 @@ class Product(BaseModel):
     name = models.CharField(max_length=255)
     description = models.TextField(max_length=5000)
     category = models.ForeignKey("products.Category", on_delete=CASCADE, related_name="products")
-    size = models.ForeignKey("products.Size", on_delete=SET_NULL, null=True, related_name="products")
+    color = models.ForeignKey("products.Color", on_delete=CASCADE, related_name="products", null=True, blank=True)
+    size = models.ManyToManyField("products.Size", related_name="products")
     price = models.DecimalField(max_digits=10, decimal_places=2)
     brand = models.ForeignKey("products.Brand", on_delete=SET_NULL, null=True, related_name="products")
 
@@ -19,6 +20,9 @@ class Product(BaseModel):
 class Category(BaseModel):
     parent_category = models.ForeignKey("products.Category", on_delete=CASCADE, blank=True, null=True)
     name = models.CharField(max_length=255)
+    category_level = models.SmallIntegerField(
+        choices=[(0, "Gender/Age"), (1, "Type_clothes")],
+    )
 
     class Meta:
         verbose_name = "Category"
@@ -44,6 +48,9 @@ class Size(BaseModel):
 class Color(BaseModel):
     name = models.CharField(max_length=50)
     image = models.ImageField(upload_to="img/products/colors", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.name}"
 
 
 class Brand(BaseModel):

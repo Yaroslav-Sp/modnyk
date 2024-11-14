@@ -1,0 +1,120 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<style>
+.star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 0.1rem;
+    font-size: 2rem;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc107;
+}
+</style>
+
+ <div class="container my-5">
+    <div class="row">
+      <!-- Product Image Gallery -->
+      <div class="col-md-6" style="height: 800px; width: 650px">
+        <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="20000">
+          <div class="carousel-inner " >
+            {% for image in product.products_images.all %}
+            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+              <img src="{{ image.image.url }}" class="d-block w-100" alt="Product Image">
+            </div>
+            {% empty %}
+            <div class="carousel-item active">
+              <img src="{% static image.image %}" class="d-block w-100" alt="Product Image">
+            </div>
+            {% endfor %}
+          </div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#productCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Product Details -->
+      <div class="col-md-6">
+        <h2>{{ product.name }}</h2>
+        <p class="text-danger fw-bold" style="flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 22px;">${{ product.price }}</p>
+        <p>{{ product.description }}</p>
+
+        <!-- Color -->
+        <div class="mb-3">
+          <label for="productSize" class="form-label">Color : {{ product.color.name }}</label>
+        </div>
+
+        <!-- Brand -->
+        <div class="mb-3">
+          <label for="productSize" class="form-label">Brand : {{ product.brand.name }}</label>
+        </div>
+
+        <!-- Sizes -->
+        <div class="mb-3">
+          <label for="productSize" class="form-label">Select Size</label>
+          <select class="form-select" id="productSize">
+            <option selected>Select Size</option>
+            {% for size in product.size.all %}
+            <option value="{{ size.id }}">{{ size.name }}</option>
+        {% endfor %}
+          </select>
+        </div>
+
+        <!-- Quantity -->
+        <div class="mb-3">
+          <label for="quantity" class="form-label">Quantity</label>
+          <input type="number" class="form-control" id="quantity" value="1" min="1" max="10">
+        </div>
+
+        <!-- Add to Cart and Wishlist -->
+        <div class="d-flex justify-content-between">
+          <button class="btn btn-primary">Add to Cart</button>
+          <button class="btn like-btn btn-link p-0  top-0 end-0 mt-2 me-3" id="wishlist-heart" onclick="toggleLike(this)">
+            <i class="fa fa-heart" style="font-size: 24px; color: #ccc;"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+   <div class="row">
+
+     <form method="POST" enctype="multipart/form-data" style="width: 25em; margin: auto; text-align: center">
+        <div class="star-rating">
+        {% for rate, label in form.fields.rating.choices %}
+            <input type="radio" id="star{{ rate }}" name="rating" value="{{ rate }}" checked>
+            <label for="star{{ rate }}" title="{{ rate }} stars">&#9733;</label>
+        {% endfor %}
+            </div>
+                {% csrf_token %}
+                {{ form.comment }}
+
+         <button type="submit" class="btn btn-primary mt-3">Submit Rating</button>
+            </div>
+     </form>
+   </div>
+  </div>
+
+
+{% endblock content %}

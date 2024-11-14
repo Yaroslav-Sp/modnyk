@@ -11,3 +11,9 @@ class Favorite(BaseModel):
 
     def __str__(self):
         return f" {self.product}"
+
+
+class PromotionBanner(BaseModel):
+    name = models.CharField(max_length=255)
+    description = models.TextField(max_length=10000)
+    image = models.ImageField(upload_to="img/shop/promotion_banner", null=True, blank=True)
