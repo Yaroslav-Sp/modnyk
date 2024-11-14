@@ -2,7 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import request
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, CreateView
+from django.views.generic import CreateView, DetailView
 
 from products.models import Product
 from reviews.forms import ReviewForm
@@ -21,6 +21,3 @@ class ProductInfo(DetailView, CreateView):
         review.customer = self.request.user
         review.save()
         return super().form_valid(form)
-
-
-

@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 
 from products.models import Product
 from shop.models import PromotionBanner
@@ -14,5 +14,3 @@ class IndexView(ListView):
         context = super().get_context_data(**kwargs)
         context["banners"] = PromotionBanner.objects.all()
         return context
-
-

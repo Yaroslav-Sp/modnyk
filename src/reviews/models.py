@@ -6,11 +6,11 @@ from common.models import BaseModel
 
 class Review(BaseModel):
     RATING_CHOICES = [
-        (1, '1 Star'),
-        (2, '2 Stars'),
-        (3, '3 Stars'),
-        (4, '4 Stars'),
-        (5, '5 Stars'),
+        (1, "1 Star"),
+        (2, "2 Stars"),
+        (3, "3 Stars"),
+        (4, "4 Stars"),
+        (5, "5 Stars"),
     ]
     product = models.ForeignKey("products.Product", on_delete=models.CASCADE, related_name="reviews")
     customer = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, null=True, related_name="reviews")

@@ -52,6 +52,7 @@ class Color(BaseModel):
     def __str__(self):
         return f"{self.name}"
 
+
 class Brand(BaseModel):
     name = models.CharField(max_length=50)
 
