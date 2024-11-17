@@ -1,5 +1,3 @@
-import os.path
-
 from config.settings.base import *  # NOQA
 
 # SECURITY WARNING: keep the secret key used in production secret!

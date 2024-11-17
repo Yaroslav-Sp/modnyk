@@ -1,8 +1,6 @@
 from decimal import Decimal
 
-from django.contrib.auth import get_user_model
-
-from cart.models import Cart, CartItem
+from cart.models import CartItem
 from products.models import Brand, Category, Color, Product, Size
 
 
@@ -22,9 +20,9 @@ def sample_cart_item(cart, **params):
     }
 
     product, _ = Product.objects.get_or_create(**default_product_data)
-    product.size.add(size)
+    product.size.set([size])
 
-    default = {"product": product, "quantity": 2}
+    default = {"product": product, "quantity": 2, "size": size}
     default.update(params)
 
     return CartItem.objects.create(cart=cart, **default)

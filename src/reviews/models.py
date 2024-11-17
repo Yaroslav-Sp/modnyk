@@ -18,4 +18,4 @@ class Review(BaseModel):
     comment = models.TextField(blank=True, max_length=3000)
 
     def __str__(self):
-        return f"Review for {self.product} by {self.customer}"
+        return f"Review № {self.pk} for {self.product} by {self.customer}"

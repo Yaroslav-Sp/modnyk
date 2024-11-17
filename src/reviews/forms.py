@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from django import forms
 
 from reviews.models import Review
@@ -10,8 +8,14 @@ class ReviewForm(forms.ModelForm):
         self.instance = kwargs.get("instance", None)
         super(ReviewForm, self).__init__(*args, **kwargs)
 
-        if self.instance and self.instance.pk:
-            self.fields["product"].initial = self.instance.pk
+        self.fields["rating"].required = True
+        self.fields["comment"].required = True
+
+        self.fields["comment"].widget.attrs.update(
+            {
+                "class": "form-control custom-textarea",
+            }
+        )
 
     def save(self, commit=True, customer=None):
         instance = super().save(commit=False)
@@ -23,8 +27,4 @@ class ReviewForm(forms.ModelForm):
 
     class Meta:
         model = Review
-        fields = ["product", "rating", "comment"]
-
-        widgets = {
-            "product": forms.HiddenInput(),
-        }
+        fields = ["rating", "comment"]

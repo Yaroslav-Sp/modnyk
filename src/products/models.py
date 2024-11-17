@@ -1,7 +1,8 @@
 from django.db import models
-from django.db.models import CASCADE, SET_NULL
+from django.db.models import CASCADE, SET_NULL, Avg, Count
 
 from common.models import BaseModel
+from reviews.models import Review
 
 
 class Product(BaseModel):
@@ -15,6 +16,17 @@ class Product(BaseModel):
 
     def __str__(self):
         return f"({self.pk}) {self.name}"
+
+    def average_rating(self):
+        result = Review.objects.filter(product=self.pk).aggregate(Avg("rating"))
+        return result["rating__avg"]
+
+    def count_reviews(self):
+        result = Review.objects.filter(product=self.pk).aggregate(Count("rating"))
+        return result["rating__count"]
+
+    class Meta:
+        ordering = ["-create_date"]
 
 
 class Category(BaseModel):
