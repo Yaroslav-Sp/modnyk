@@ -1,4 +1,3 @@
-import unittest
 from http import HTTPStatus
 
 from django.contrib.auth import get_user_model
@@ -36,8 +35,7 @@ class TestAuthCustomer(TestCase):
         response = self.client.get(reverse("admin:index"))
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    @unittest.skip("We don't have index page, will have it in the next HW")
     def test_user_access_index_page(self):
         self.client.force_login(self.user)
-        response = self.client.get(reverse("index"))
+        response = self.client.get(reverse("shop:index"))
         self.assertEqual(response.status_code, HTTPStatus.OK)

@@ -1,0 +1,212 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Product images -->
+        <div class="col-md-6" style=" width: 650px">
+            <div id="productCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="20000">
+                <div class="carousel-inner ">
+                    {% for image in product.products_images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <img src="{{ image.image.url }}" class="d-block" alt="Product Image"
+                             style="object-fit: cover; width: 100%; height: 650px">
+                    </div>
+                    {% empty %}
+                    <div class="carousel-item active">
+                        <img src="{% static 'img/default_product.png' %}" class="d-block w-100" alt="Product image">
+                    </div>
+                    {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#productCarousel"
+                        data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#productCarousel"
+                        data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Product details -->
+        <div class="col-md-6">
+            <h2>{{ product.name }}</h2>
+            <div class="" style="display: flex; justify-content: space-between;">
+                <p class="text-danger fw-bold"
+                   style="flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 22px;">
+                    ${{ product.price }}</p>
+                <!-- Product rating-->
+                <div style="display: flex; justify-content: space-between;">
+                    <h5 class="card-title" style="padding-right: 15px;">
+                        <span class="fa fa-star {% if product.average_rating >= 0.5 %} checked {% endif %}"
+                              style="font-size: 0.8rem;"></span>
+                        <span class="fa fa-star {% if product.average_rating >= 1.5 %} checked {% endif %}"
+                              style="font-size: 0.8rem;"></span>
+                        <span class="fa fa-star {% if product.average_rating >= 2.5 %} checked {% endif %}"
+                              style="font-size: 0.8rem;"></span>
+                        <span class="fa fa-star {% if product.average_rating >= 3.5 %} checked {% endif %}"
+                              style="font-size: 0.8rem;"></span>
+                        <span class="fa fa-star {% if product.average_rating >= 4.5 %} checked {% endif %}"
+                              style="font-size: 0.8rem;"></span>
+                    </h5>
+                    <a href="#reviews-container"
+                       style="font-size: 0.8rem; margin: 0px; padding-top: 4px; text-decoration: none; color: inherit;">
+                        {{ product.count_reviews }}</a>
+                </div>
+            </div>
+            <p>{{ product.description }}</p>
+
+            <!-- Color -->
+            <div class="mb-3">
+                <p class="form-label">Color : {{ product.color.name }}</p>
+            </div>
+
+            <!-- Brand -->
+            <div class="mb-3">
+                <p class="form-label">Brand : {{ product.brand.name }}</p>
+            </div>
+            <!-- Cart form -->
+            <form method="POST" class="mb-3 ">
+                {% csrf_token %}
+                {{cart_form|crispy }}
+
+                <div class="container text-center">
+                    <div class="row">
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-primary col-9" type="submit" name="form_type" value="cart_form"
+                                style="margin-right:15px;">Add to Cart
+                        </button>
+            </form>
+            <!-- Add to Wishlist -->
+            <form method="POST" class="col-1 ">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger no-focus " type="submit" name="form_type" value="favorite_form"
+                        id="wishlist-heart" onclick="toggleLike(this)">
+                    <i class="fa fa-heart"
+                       style="font-size: 28px; color: {% if favorite_boolean %} #FF0000 {% else %} grey {% endif %};"></i>
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Reviews -->
+<div class="container my-5" id="reviews-container" style="scroll-margin-top: 150px;">
+    <div class="text-center">
+        <h2 class="text-center mb-4">Customer Reviews about {{ product.name }}</h2>
+        <!-- Create reviews -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+            Leave a Review
+        </button>
+        <br><br>
+    </div>
+
+    <!-- Reviews list -->
+    <div class="review-list">
+        {% for review in reviews %}
+        <div class="review-item mb-4 p-3 border rounded">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="review-author">
+                        <strong>{{ review.customer.get_full_name}}</strong>
+                    </div>
+
+                    <p style="font-size: 0.8rem;"> {{review.create_date}}</p>
+                </div>
+                <h5 class="card-title">
+                    <span class="fa fa-star {% if review.rating > 0 %} checked {% endif %}"
+                          style="font-size: 0.8rem;"></span>
+                    <span class="fa fa-star {% if review.rating > 1 %} checked {% endif %}"
+                          style="font-size: 0.8rem;"></span>
+                    <span class="fa fa-star {% if review.rating > 2 %} checked {% endif %}"
+                          style="font-size: 0.8rem;"></span>
+                    <span class="fa fa-star {% if review.rating > 3 %} checked {% endif %}"
+                          style="font-size: 0.8rem;"></span>
+                    <span class="fa fa-star {% if review.rating > 4 %} checked {% endif %}"
+                          style="font-size: 0.8rem;"></span>
+                </h5>
+            </div>
+
+            <div class="review-comment mt-2 text-break">
+                <p>{{ review.comment }}</p>
+            </div>
+        </div>
+        {% empty %}
+        <div class="alert alert-info">No reviews yet. Be the first to leave a review!</div>
+        {% endfor %}
+
+        <!-- Pagination controller -->
+        <div class="pagination" style="display: flex; justify-content: center; align-items: center;">
+            <span class="step-links">
+                {% if reviews.has_previous %}
+                <a class="btn btn-primary bi bi-arrow-left"
+                   href="?page={{ reviews.previous_page_number }}#reviews-container"></a>
+                {% endif %}
+                <div class="btn-group" role="group">
+                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                    Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}
+                </button>
+            {% if reviews.paginator.num_pages > 1 %}
+            <ul class="dropdown-menu" style="width: 50px;">
+                {% if reviews.has_previous %}
+              <li><a class="dropdown-item" style="width: 50px;" href="?page=1#reviews-container">First page</a></li>
+                {% endif %}
+                {% if reviews.has_next %}
+              <li><a class="dropdown-item" style="width: 50px;"
+                     href="?page={{ reviews.paginator.num_pages }}#reviews-container">Last page</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+            </div>
+                {% if reviews.has_next %}
+                    <a class="btn btn-primary bi bi-arrow-right"
+                       href="?page={{ reviews.next_page_number }}#reviews-container"></a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Creation review form -->
+<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="reviewModalLabel">Submit Your Review</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" enctype="multipart/form-data" style=" margin: auto; text-align: center">
+                    <div class="star-rating">
+                        {% for rate, label in review_form.rating.field.choices reversed %}
+                    {% if not forloop.last %}
+                  <input type="radio" id="star{{ rate }}" name="rating" value="{{ rate }}" {% if form.rating.value == rate %}checked{% endif %} required>
+                  <label for="star{{ rate }}" title="{{ rate }} stars">&#9733;</label>
+                    {% endif %}
+              {% endfor %}
+                    </div>
+                    {% csrf_token %}
+                    <div class="container">
+                        {{ review_form.comment }}
+                        {{ review_form.product }}
+                    </div>
+                    <button type="submit" class="btn btn-primary mt-3" name="form_type" value="review_form">Submit
+                        Rating
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+{% endblock content %}

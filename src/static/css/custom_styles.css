@@ -1,0 +1,139 @@
+    .truncate-text {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+  .like-btn:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+   }
+
+  .like-btn {
+    background: none;
+
+    border: none;
+  }
+    /* Add padding-top to body to avoid content overlap with fixed navigation bars */
+    body {
+      padding-top: 120px; /* Adjust based on combined height of both navbars */
+    }
+    /* Adjust space between products */
+    .card {
+      margin-bottom: 10px; /* Reduced space between products */
+    }
+
+    .checked {
+            color: orange;
+        }
+    html {
+    scroll-behavior: auto;
+  }
+
+  .star-rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 0.1rem;
+    font-size: 2rem;
+}
+
+.star-rating input[type="radio"] {
+    display: none;
+}
+
+.star-rating label {
+    cursor: pointer;
+    color: #ddd;
+    transition: color 0.2s;
+}
+
+.star-rating input[type="radio"]:checked ~ label,
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color: #ffc107;
+}
+  <style>
+  .modal-content {
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .modal-body {
+    text-align: center;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+  }
+
+  .custom-textarea {
+    width: 100%;
+    resize: none;
+    height: 200px;
+
+}
+
+  .review-item {
+    background-color: #f9f9f9;
+}
+
+.review-author {
+    font-size: 1rem;
+    color: #333;
+}
+
+.star-rating {
+    font-size: 2.5rem;
+}
+
+.star-rating span {
+    margin-right: 5px;
+}
+
+.review-comment p {
+    font-size: 1rem;
+    color: #555;
+}
+
+  .rating-list li {
+          float: right;
+          color: #ddd;
+          padding: 10px 5px;
+        }
+
+        .rating-list li:hover,
+        .rating-list li:hover ~ li {
+          color: orange;
+        }
+
+        .rating-list {
+          display: inline-block;
+          list-style: none;
+        }
+        .checked {
+            color: orange;
+        }
+
+    .no-focus:focus {
+    outline: none;
+    box-shadow: none;
+}
