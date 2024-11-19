@@ -46,7 +46,7 @@ class OrderItem(BaseModel):
     quantity = models.PositiveIntegerField()
 
     def __str__(self):
-        return f" {self.product} in order {self.order}"
+        return f" Item {self.pk} {self.product} in order {self.order}"
 
 
 class DeliveryAddress(BaseModel):
