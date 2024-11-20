@@ -23,7 +23,8 @@ class IndexView(ListView):
             context["favorite_boolean"] = []
         else:
             context["favorite_boolean"] = Favorite.objects.filter(customer=self.request.user).values_list(
-                "product", flat=True)
+                "product", flat=True
+            )
 
         return context
 
@@ -53,7 +54,6 @@ class FavouritesView(ListView):
             return Favorite.objects.none()
         else:
             return Favorite.objects.filter(customer=self.request.user)
-
 
     def post(self, request, *args, **kwargs):
         post_request = request.POST
