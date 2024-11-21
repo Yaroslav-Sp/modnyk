@@ -36,6 +36,7 @@ class ProductCreateView(CreateAPIView):
 
 
 class ProductDeleteView(DestroyAPIView):
+    queryset = Product.objects.all()
     serializer_class = ProductChangeSerializer
 
     def get_object(self):
@@ -43,6 +44,7 @@ class ProductDeleteView(DestroyAPIView):
 
 
 class ProductUpdateView(UpdateAPIView):
+    queryset = Order.objects.all()
     serializer_class = ProductChangeSerializer
 
     def get_object(self):
@@ -58,6 +60,7 @@ class OrdersListView(ListAPIView):
 
 
 class OrdersDetailView(RetrieveAPIView):
+    queryset = Order.objects.all()
     serializer_class = OrderSerializer
 
     def get_object(self):
@@ -65,6 +68,7 @@ class OrdersDetailView(RetrieveAPIView):
 
 
 class OrderItemCreateView(CreateAPIView):
+    queryset = Order.objects.all()
     serializer_class = OrderItemChangeSerializer
 
     def perform_create(self, serializer):
