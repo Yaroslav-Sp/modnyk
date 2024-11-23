@@ -1,0 +1,28 @@
+services:
+  backend:
+    build: ./
+    container_name: modnyk_container
+    working_dir: /modnyk
+    ports:
+      - "8000:8008"
+    command:
+      - ./commands/start_server_dev.sh
+    volumes:
+      - ./src:/modnyk/src
+      - ./commands:/modnyk/commands
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16.4
+    ports:
+      - "5432:5432"
+    volumes:
+      - pd_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+
+volumes:
+  pd_data: { }
