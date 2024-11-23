@@ -33,10 +33,10 @@ else:
             "HOST": os.environ.get("POSTGRES_HOST"),  # NOQA
             "PORT": os.environ.get("POSTGRES_PORT"),  # NOQA
         },
-        # "default_sqlite": {
-        #     "ENGINE": "django.db.backends.sqlite3",
-        #     "NAME": BASE_DIR / "db.sqlite3",  # NOQA
-        # }
+        "default_sqlite": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",  # NOQA
+        }
     }
 
 # Static files (CSS, JavaScript, Images)
