@@ -4,7 +4,7 @@ from django.shortcuts import redirect
 from django.views.generic import DetailView
 
 from cart.forms import CartItemForm
-from cart.models import Cart
+from cart.models import Cart, CartItem
 from products.models import Product
 from reviews.forms import ReviewForm
 from shop.models import Favorite
@@ -28,9 +28,13 @@ class ProductInfo(DetailView):
         context["review_form"] = ReviewForm()
         context["cart_form"] = CartItemForm()
         if isinstance(self.request.user, AnonymousUser):
+            context["is_product_in_cart"] = []
             context["favorite_boolean"] = []
         else:
             context["favorite_boolean"] = Favorite.objects.filter(customer=self.request.user, product=self.get_object())
+            context["is_product_in_cart"] = CartItem.objects.filter(
+                cart__customer=self.request.user, product=self.get_object()
+            ).first()
         return context
 
     def post(self, request, *args, **kwargs):
