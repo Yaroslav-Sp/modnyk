@@ -4,12 +4,14 @@ services:
     container_name: modnyk_container
     working_dir: /modnyk
     ports:
-      - "8000:8008"
+      - "${LOCAL_PORT}:${WSGI_PORT}"
     command:
-      - ./commands/start_server_dev.sh
+      - ./commands/start_server_${MODE}.sh
     volumes:
       - ./src:/modnyk/src
       - ./commands:/modnyk/commands
+      - static_content:/modnyk/src/static
+      - media_content:/modnyk/src/media
     env_file:
       - .env
     depends_on:
@@ -48,9 +50,25 @@ services:
       - .env
     restart: on-failure
 
+  nginx:
+    image: nginx:1.27
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - static_content:/modnyk/src/static
+      - media_content:/modnyk/src/media
+    ports:
+      - '80:80'
+      - '443:443'
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
 
 
 volumes:
   pg_data: { }
   pg_admin: { }
   mongo_data: { }
+  static_content: { }
+  media_content: { }

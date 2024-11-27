@@ -116,10 +116,10 @@
     </div>
 
     <!-- Reviews list -->
-    <div class="review-list">
+    <div class="review-list ">
         {% for review in reviews %}
-        <div class="review-item mb-4 p-3 border rounded">
-            <div class="d-flex justify-content-between align-items-start">
+        <div class="review-item mb-4 p-3 border rounded bg-white" >
+            <div class="d-flex justify-content-between align-items-start" >
                 <div>
                     <div class="review-author">
                         <strong>{{ review.customer.get_full_name}}</strong>
@@ -150,34 +150,32 @@
         {% endfor %}
 
         <!-- Pagination controller -->
-        <div class="pagination" style="display: flex; justify-content: center; align-items: center;">
-            <span class="step-links">
-                {% if reviews.has_previous %}
-                <a class="btn btn-primary bi bi-arrow-left"
-                   href="?page={{ reviews.previous_page_number }}#reviews-container"></a>
-                {% endif %}
-                <div class="btn-group" role="group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                        aria-expanded="false">
+        <div class="pagination d-flex justify-content-center align-items-center">
+            {% if reviews.has_previous %}
+            <a class="btn btn-outline-primary me-2" href="?page={{ reviews.previous_page_number }}#reviews-container">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            {% endif %}
+            <div class="btn-group">
+                <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     Page {{ reviews.number }} of {{ reviews.paginator.num_pages }}
                 </button>
-            {% if reviews.paginator.num_pages > 1 %}
-            <ul class="dropdown-menu" style="width: 50px;">
-                {% if reviews.has_previous %}
-              <li><a class="dropdown-item" style="width: 50px;" href="?page=1#reviews-container">First page</a></li>
+                {% if reviews.paginator.num_pages > 1 %}
+                <ul class="dropdown-menu">
+                    {% if reviews.has_previous %}
+                    <li><a class="dropdown-item" href="?page=1#reviews-container">First page</a></li>
+                    {% endif %}
+                    {% if reviews.has_next %}
+                    <li><a class="dropdown-item" href="?page={{ reviews.paginator.num_pages }}#reviews-container">Last page</a></li>
+                    {% endif %}
+                </ul>
                 {% endif %}
-                {% if reviews.has_next %}
-              <li><a class="dropdown-item" style="width: 50px;"
-                     href="?page={{ reviews.paginator.num_pages }}#reviews-container">Last page</a></li>
-                {% endif %}
-            </ul>
-            {% endif %}
             </div>
-                {% if reviews.has_next %}
-                    <a class="btn btn-primary bi bi-arrow-right"
-                       href="?page={{ reviews.next_page_number }}#reviews-container"></a>
-                {% endif %}
-            </span>
+            {% if reviews.has_next %}
+            <a class="btn btn-outline-primary ms-2" href="?page={{ reviews.next_page_number }}#reviews-container">
+                <i class="bi bi-arrow-right"></i>
+            </a>
+            {% endif %}
         </div>
     </div>
 </div>

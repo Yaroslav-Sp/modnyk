@@ -1,3 +1,5 @@
+import os
+
 from config.settings.base import *  # NOQA
 from config.settings.prod import DATABASES
 
@@ -33,11 +35,19 @@ else:
             "HOST": os.environ.get("POSTGRES_HOST"),  # NOQA
             "PORT": os.environ.get("POSTGRES_PORT"),  # NOQA
         },
-        "default_sqlite": {
+        "default sqlite": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",  # NOQA
-        }
+        },
     }
+
+STATIC_URL = "static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # NOQA
+]
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"  # NOQA
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

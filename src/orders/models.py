@@ -21,29 +21,37 @@ class Order(BaseModel):
         null=True,
         blank=True,
     )
-    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    delivery_address = models.ForeignKey(
-        "orders.DeliveryAddress", on_delete=SET_NULL, null=True, related_name="orders_addresses"
-    )
-
     recipients_first_name = models.CharField(max_length=150, blank=True)
     recipients_last_name = models.CharField(max_length=150, blank=True)
     recipients_phone_number = PhoneNumberField()
 
+    cost_of_delivery = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    delivery_address = models.ForeignKey(
+        "orders.DeliveryAddress", on_delete=SET_NULL, null=True, related_name="orders_addresses"
+    )
     delivery_type = models.SmallIntegerField(
         choices=[(0, "Self-pickup"), (1, "Courier delivery"), (2, "Shipping"), (3, "Postal delivery")],
         null=True,
         blank=True,
     )
 
+    def get_recipients_full_name(self):
+        return f"{self.recipients_first_name} {self.recipients_last_name}"
+
     def __str__(self):
         return f"Order № {self.pk} by {self.customer}"
+
+    def total_order_amount(self):
+        return sum(item.total_item_cost() for item in self.order_items.all()) + self.cost_of_delivery
 
 
 class OrderItem(BaseModel):
     order = models.ForeignKey("orders.Order", on_delete=SET_NULL, null=True, related_name="order_items")
     product = models.ForeignKey("products.Product", on_delete=CASCADE)
     quantity = models.PositiveIntegerField()
+
+    def total_item_cost(self):
+        return self.quantity * self.product.price
 
     def __str__(self):
         return f" Item {self.pk} {self.product} in order {self.order}"
@@ -53,7 +61,8 @@ class DeliveryAddress(BaseModel):
     customer = models.ForeignKey(
         get_user_model(), on_delete=models.SET_NULL, null=True, related_name="customers_address"
     )
-    street_address = models.CharField(max_length=200)
+    address_line_1 = models.CharField(max_length=200)
+    address_line_2 = models.CharField(max_length=200, null=True, blank=True)
     city = models.CharField(max_length=100)
     state = models.CharField(max_length=200)
     postal_code = models.CharField(max_length=200, null=True, blank=True)
@@ -64,7 +73,10 @@ class DeliveryAddress(BaseModel):
         verbose_name_plural = "Delivery addresses"
 
     def __str__(self):
-        return f" {self.country}, {self.state}, {self.city}, {self.street_address}, {self.postal_code}"
+        return (
+            f" {self.address_line_1}, {self.address_line_2}, {self.city}, {self.state}, {self.postal_code}, "
+            f"{self.country}"
+        )
 
 
 class Payment(BaseModel):
