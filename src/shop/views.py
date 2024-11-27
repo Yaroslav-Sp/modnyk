@@ -1,10 +1,12 @@
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.views.generic import ListView
 
 from products.models import Product
 from shop.models import Favorite, PromotionBanner
+from shop.tasks import create_customer, create_product, create_review
 
 
 class IndexView(ListView):
@@ -67,3 +69,18 @@ class FavouritesView(ListView):
             favorite_item.delete()
 
         return redirect("shop:favorites_list")
+
+
+def product_generator(request: HttpRequest) -> HttpResponse:
+    create_product(5)
+    return HttpResponse("Task is started")
+
+
+def reviews_generator(request: HttpRequest) -> HttpResponse:
+    create_review(10)
+    return HttpResponse("Task is started")
+
+
+def customer_generator(request: HttpRequest) -> HttpResponse:
+    create_customer(10)
+    return HttpResponse("Task is started")

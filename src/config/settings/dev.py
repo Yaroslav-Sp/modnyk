@@ -27,7 +27,7 @@ if os.environ.get("GITHUB_WORKFLOW"):  # NOQA
 else:
 
     DATABASES = {
-        "default": {
+        "default postgres": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": os.environ.get("POSTGRES_DB"),  # NOQA
             "USER": os.environ.get("POSTGRES_USER"),  # NOQA
@@ -35,7 +35,7 @@ else:
             "HOST": os.environ.get("POSTGRES_HOST"),  # NOQA
             "PORT": os.environ.get("POSTGRES_PORT"),  # NOQA
         },
-        "default sqlite": {
+        "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",  # NOQA
         },
