@@ -1,10 +1,11 @@
 from django.contrib import admin  # NOQA: 401
 from django.urls import path
 
-from products.views import ProductInfo
+from products.views import ProductInfo, ProductList
 
 app_name = "products"
 
 urlpatterns = [
     path("info/<int:pk>/", ProductInfo.as_view(), name="product_info"),
+    path("", ProductList.as_view(), name="product_list"),
 ]

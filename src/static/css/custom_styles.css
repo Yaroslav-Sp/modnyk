@@ -303,3 +303,122 @@ html {
     .social-icons a:hover {
       color: #0056b3;
     }
+
+    .price-range {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.price-range input {
+    width: 60px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    height: auto;
+}
+
+.price-range input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.price-separator {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+}
+
+
+    .filters {
+        padding: 15px;
+        background-color: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-shadow: none;
+    }
+
+    .filters h4 {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .filter-section {
+        margin-bottom: 20px;
+    }
+
+    .selected-filters .badge {
+        background-color: #e0e0e0;
+        color: #555;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+    }
+
+    .selected-filters .badge:hover {
+        background-color: #d6d6d6;
+        color: #333;
+        border-color: #999;
+    }
+
+    .view-toggle button {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 18px;
+        color: #555;
+        background-color: #f8f9fa;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    .view-toggle button.active {
+        background-color: #333;
+        color: #fff;
+        border-color: #333;
+    }
+
+    .view-toggle button:not(.active):hover {
+        background-color: #e0e0e0;
+    }
+
+    .form-select {
+        font-size: 14px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+
+    .form-select:focus {
+        border-color: #999;
+        outline: none;
+    }
+
+    .card {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: none;
+    }
+
+    .card-title {
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .card-text {
+        font-size: 14px;
+        color: #555;
+    }

@@ -5,7 +5,26 @@ from products.models import Brand, Category, Color, Product, Size
 
 
 def sample_cart_item(cart, **params):
-    category, _ = Category.objects.get_or_create(name="TestCategory", category_level=1)
+    sample_category_gender_level = "Men"
+    sample_category_main_level = "Outerwear"
+    sample_category_type_level = "Shirts"
+
+    gender_category, _ = Category.objects.get_or_create(
+        name=sample_category_gender_level,
+        level=0,
+    )
+    main_category, _ = Category.objects.get_or_create(
+        name=sample_category_main_level,
+        level=1,
+        parent=gender_category,
+    )
+    subcategory, _ = Category.objects.get_or_create(
+        name=sample_category_type_level,
+        level=2,
+        parent=main_category,
+    )
+
+    category = subcategory
     brand, _ = Brand.objects.get_or_create(name="TestBrand")
     size, _ = Size.objects.get_or_create(name="M", description="Medium size")
     color, _ = Color.objects.get_or_create(name="Red")

@@ -5,56 +5,61 @@
 
 <section class="container mt-5">
   <h2 class="text-center mb-4">Wishlist</h2>
-  <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 g-2 ">
+ <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
     <!-- Favorite products -->
-    {% for favorite in favorites %}
-    <div class="col-md-6 col-lg-3">
-      <div class="card ">
-        <form method="POST" class="col-1 ">
-          {% csrf_token %}
-          <button class="btn btn-link like-btn outline-0 position-absolute top-0 end-0 mt-2 me-2" name="product_delete"
-                  value="{{favorite.product.id}}" onclick="toggleLike(this)">
-            <i class="bi bi-trash3-fill primary col-1" style="color: grey; font-size: 25px;"></i>
-          </button>
-        </form>
-        <a href="{% url 'products:product_info' favorite.product.pk %}">
-          {% if favorite.product.products_images.all %}
-          <img src="{{ favorite.product.products_images.all.first.image.url }}" class="card-img-top" alt="Product 3"
-               style="object-fit: cover; width: 100%; height: 380px">
-          {% else %}
-          <img src="{% static 'img/default_product.png' %}" class="card-img-top" alt="Product 3"
-               style="object-fit: cover; width: 100%; height: 380px">
-          {% endif %}
-        </a>
-        <div class="card-body" style="flex-grow: 1; display: flex; flex-direction: column;">
-          <h5 class="card-title"
-              style="flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;font-size: 17px; ">
-            {{ favorite.product.name }}</h5>
-          <div class="" style="display: flex; justify-content: space-between;">
-            <p class="card-text text-danger fw-bold" style="flex-shrink: 0; margin: 0px;">${{ favorite.product.price }}</p>
-            <div style="display: flex; justify-content: space-between;">
-              <!-- Product rating -->
-              <h5 class="card-title"
-                  style="padding-right: 5px; margin: 0px; display: flex; justify-content: center; align-items: center;">
-                <span class="fa fa-star {% if favorite.product.average_rating >= 0.5 %} checked {% endif %}"
-                      style="font-size: 0.6rem; margin-right: 3px;"></span>
-                <span class="fa fa-star {% if favorite.product.average_rating >= 1.5 %} checked {% endif %}"
-                      style="font-size: 0.6rem; margin-right: 3px;"></span>
-                <span class="fa fa-star {% if favorite.product.average_rating >= 2.5 %} checked {% endif %}"
-                      style="font-size: 0.6rem; margin-right: 3px;"></span>
-                <span class="fa fa-star {% if favorite.product.average_rating >= 3.5 %} checked {% endif %}"
-                      style="font-size: 0.6rem; margin-right: 3px;"></span>
-                <span class="fa fa-star {% if favorite.product.average_rating >= 4.5 %} checked {% endif %}"
-                      style="font-size: 0.6rem; margin-right: 3px;"></span>
-              </h5>
-              <a href="{% url 'products:product_info' favorite.product.pk %}#reviews-container"
-                 style="font-size: 0.7rem; margin: 0px; padding-top: 4px; text-decoration: none; color: inherit;">
-                {{ favorite.product.count_reviews }}</a>
+    {% for product in favorites %}
+    <div class="col">
+                <div class="card h-100 shadow-sm border-0" id="product{{product.id}}" style="scroll-margin-top: 150px;">
+                    <!-- Like button form -->
+                    {% if user.is_authenticated %}
+                    <form method="POST" class="position-absolute top-0 end-0 mt-2 me-2" action="#product{{product.id}}">
+                        {% csrf_token %}
+                        <button class="btn btn-light like-btn" name="favorite_form" value="{{product.id}}"
+                                onclick="toggleLike(this)">
+                            <i class="bi bi-trash3-fill primary col-1" style="color: grey; font-size: 25px;"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                    <!-- Images -->
+                    <a href="{% url 'products:product_info' product.pk %}">
+                        {% if product.products_images.all %}
+                        <img src="{{ product.products_images.all.first.image.url }}" class="card-img-top rounded-top"
+                             alt="product.name" style="object-fit: cover; height: 300px;">
+                        {% else %}
+                        <img src="{% static 'img/default_product.png' %}" class="card-img-top rounded-top"
+                             alt="default_photo" style="object-fit: cover; height: 300px;">
+                        {% endif %}
+                    </a>
+                    <!-- Product data -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">{{ product.name }}</h5>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <p class="card-text text-danger fw-bold mb-0">${{ product.price }}</p>
+                            <div class="d-flex align-items-center">
+                                <!-- Product rating -->
+
+                                <h5 class="card-title"
+                                    style="padding-right: 5px; margin: 0px; display: flex; justify-content: center; align-items: center;">
+                <span class="fa fa-star {% if product.average_rating >= 0.5 %} checked {% endif %}"
+                      style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 1.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 2.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 3.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 4.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                </h5>
+
+                                <a href="{% url 'products:product_info' product.pk %}#reviews-container"
+                                   class="text-decoration-none text-muted small">{{ product.review_count }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
+
     {% empty %}
   </div>
   <div class="alert alert-info mb-4 p-3 ">You haven't got any favorite items in your wishlist. Just click on the heart

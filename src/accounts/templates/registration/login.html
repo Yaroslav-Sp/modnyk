@@ -1,0 +1,17 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<div style="width: 30em; margin: auto; text-align: center;">
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-success btn-lg w-100">Login</button>
+    </form>
+
+    <div style="margin-top: 1em;">
+        <a href="{% url 'registration' %}" class="btn btn-primary btn-lg w-50">Register</a>
+    </div>
+</div>
+{% endblock content %}

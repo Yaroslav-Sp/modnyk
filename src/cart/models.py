@@ -14,6 +14,10 @@ class Cart(BaseModel):
     def __str__(self):
         return f"Cart №{self.pk} by {self.customer}"
 
+    def total_cart_cost_and_delivery(self, delivery_type=None):
+        delivery_cost = delivery_type.default_cost if delivery_type else 0
+        return self.total_cart_cost() + delivery_cost
+
 
 class CartItem(BaseModel):
     cart = models.ForeignKey("cart.Cart", on_delete=CASCADE, related_name="cart_items")

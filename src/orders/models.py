@@ -24,16 +24,11 @@ class Order(BaseModel):
     recipients_first_name = models.CharField(max_length=150, blank=True)
     recipients_last_name = models.CharField(max_length=150, blank=True)
     recipients_phone_number = PhoneNumberField()
-
-    cost_of_delivery = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     delivery_address = models.ForeignKey(
         "orders.DeliveryAddress", on_delete=SET_NULL, null=True, related_name="orders_addresses"
     )
-    delivery_type = models.SmallIntegerField(
-        choices=[(0, "Self-pickup"), (1, "Courier delivery"), (2, "Shipping"), (3, "Postal delivery")],
-        null=True,
-        blank=True,
-    )
+    delivery_type = models.ForeignKey("orders.DeliveryType", on_delete=models.CASCADE, null=True, blank=True)
+    cost_of_delivery = models.DecimalField(max_digits=10, decimal_places=2)
 
     def get_recipients_full_name(self):
         return f"{self.recipients_first_name} {self.recipients_last_name}"
@@ -41,17 +36,21 @@ class Order(BaseModel):
     def __str__(self):
         return f"Order № {self.pk} by {self.customer}"
 
+    def total_order_items_cost(self):
+        return sum(item.total_item_cost() for item in self.order_items.all())
+
     def total_order_amount(self):
-        return sum(item.total_item_cost() for item in self.order_items.all()) + self.cost_of_delivery
+        return self.cost_of_delivery + self.total_order_items_cost()
 
 
 class OrderItem(BaseModel):
     order = models.ForeignKey("orders.Order", on_delete=SET_NULL, null=True, related_name="order_items")
     product = models.ForeignKey("products.Product", on_delete=CASCADE)
     quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def total_item_cost(self):
-        return self.quantity * self.product.price
+        return self.quantity * self.price
 
     def __str__(self):
         return f" Item {self.pk} {self.product} in order {self.order}"
@@ -87,3 +86,11 @@ class Payment(BaseModel):
 
     def __str__(self):
         return f" Payment for order {self.order}"
+
+
+class DeliveryType(models.Model):
+    name = models.CharField(max_length=255)
+    default_cost = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return self.name

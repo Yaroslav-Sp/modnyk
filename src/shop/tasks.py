@@ -13,7 +13,8 @@ fake = Faker()
 
 @shared_task()
 def create_product(count):
-    sample_category_base_level = ["Men", "Women", "Children"]
+    sample_category_gender_level = ["Men", "Women", "Children"]
+    sample_category_main_level = ["Outerwear", "Underwear", "Footwear", "Accessories", "Activewear", "Swimwear"]
     sample_category_type_level = [
         "Shirts",
         "Pants",
@@ -25,24 +26,9 @@ def create_product(count):
         "Coats",
         "Suits",
         "Skirts",
-        "Underwear",
-        "Activewear",
         "Sleepwear",
         "Jeans",
-        "Accessories",
     ]
-
-    base_categories = [
-        Category.objects.get_or_create(name=base_name, category_level=0)[0] for base_name in sample_category_base_level
-    ]
-
-    for base_category in base_categories:
-        for type_name in sample_category_type_level:
-            Category.objects.get_or_create(
-                name=f"{base_category.name} {type_name}", category_level=1, parent_category=base_category
-            )
-
-    subcategories = list(Category.objects.filter(category_level=1))
 
     default_sizes = {
         "XS": "Extra Small",
@@ -53,14 +39,38 @@ def create_product(count):
     }
 
     for _ in range(count):
-        category = random.choice(subcategories)
+        gender_name = random.choice(sample_category_gender_level)
+        main_category_name = random.choice(sample_category_main_level)
+        type_name = random.choice(sample_category_type_level)
 
-        brand, _ = Brand.objects.get_or_create(name=fake.word(part_of_speech="noun").capitalize())
+        gender_category, _ = Category.objects.get_or_create(
+            name=gender_name,
+            level=0,
+        )
+        main_category, _ = Category.objects.get_or_create(
+            name=main_category_name,
+            level=1,
+            parent=gender_category,
+        )
+        subcategory, _ = Category.objects.get_or_create(
+            name=type_name,
+            level=2,
+            parent=main_category,
+        )
+
+        brand_name = fake.word(part_of_speech="noun").capitalize()
+        brand, _ = Brand.objects.get_or_create(name=brand_name)
 
         random_size = random.choice(list(default_sizes.keys()))
-        size, _ = Size.objects.get_or_create(name=random_size, description=default_sizes[random_size])
+        size_name = random_size
+        size_description = default_sizes[random_size]
+        size, _ = Size.objects.get_or_create(
+            name=size_name,
+            description=size_description,
+        )
 
-        color, _ = Color.objects.get_or_create(name=fake.color_name())
+        color_name = fake.color_name()
+        color, _ = Color.objects.get_or_create(name=color_name)
 
         product_data = {
             "name": fake.text(max_nb_chars=30),
@@ -68,8 +78,9 @@ def create_product(count):
             "color": color,
             "price": Decimal(str(round(random.uniform(0.5, 500.0), 2))),
             "brand": brand,
-            "category": category,
+            "category": subcategory,
         }
+
         product = Product.objects.create(**product_data)
         product.size.set([size])
         product.save()
