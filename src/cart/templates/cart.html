@@ -1,0 +1,112 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+<section class="container mt-5">
+    <h2 class="text-center mb-4">Your Shopping Cart</h2>
+    <div class="row">
+        <!-- Cart Items -->
+        <div class="col-md-9">
+            <table class="table table-borderless align-middle">
+                <thead class="border-bottom">
+                <tr>
+                    <th scope="col" class="w-50">Product</th>
+                    <th scope="col" class="text-center w-10">Quantity</th>
+                    <th scope="col" class="text-end w-25">Price</th>
+                    <th scope="col" class="text-end w-25">Total cost</th>
+                    <th scope="col" class="text-end w-25">Remove</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Cart Item -->
+                {% for cart_item in cart %}
+                <tr class="border-bottom">
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <a href="{% url 'products:product_info' cart_item.product.pk %}">
+                                {% if cart_item.product.products_images.all %}
+                                <img src="{{ cart_item.product.products_images.first.image.url }}"
+                                     alt="Product Image" class="img-thumbnail me-3" style="width: 80px;">
+                                {% else %}
+                                <img src="{% static 'img/default_product.png' %}" alt="Product Image"
+                                     class="img-thumbnail me-3" style="width: 80px;">
+                                {% endif %}
+                            </a>
+                            <div>
+                                <h6 class="mb-0"
+                                    style=" width: 280px; flex-shrink: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;font-size: 17px;">
+                                    {{cart_item.product.name}}</h6>
+                                <small class="text-muted">Size: {{cart_item.size.name}} | Color:
+                                    {{cart_item.product.color.name}}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-center">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <div class="btn-group me-2" role="group">
+                                {% if cart_item.quantity > 1 %}
+                                <button type="submit" name="quantity-1" value="{{cart_item.id}}"
+                                        class="btn btn-outline-secondary"><i class="bi bi-dash-circle"
+                                                                             style="font-size: 1.2rem;"></i></button>
+                                {% else %}
+                                <button type="button" class="btn btn-outline-light" disabled><i
+                                        class="bi bi-dash-circle" style="font-size: 1.2rem; color: white;"></i></button>
+                                {% endif %}
+                                <span id="quantity" class="form-control text-center">{{cart_item.quantity}}</span>
+                                {% if cart_item.quantity < 10 %}
+                                <button type="submit" name="quantity+1" value="{{cart_item.id}}"
+                                        class="btn btn-outline-secondary"><i class="bi bi-plus-circle"
+                                                                             style="font-size: 1.2rem;"></i></button>
+                                {% else %}
+                                <button type="button" class="btn btn-outline-light" disabled><i
+                                        class="bi bi-dash-circle" style="font-size: 1.2rem; color: white;"></i></button>
+                                {% endif %}
+                            </div>
+                        </form>
+                    </td>
+                    <td class="text-end">
+                        <strong>${{cart_item.product.price}}</strong>
+                    </td>
+                    <td class="text-end">
+                        <strong>${{cart_item.total_item_cost}}</strong>
+                    </td>
+                    <td class="text-end">
+                        <form method="POST" class="col-1">
+                            {% csrf_token %}
+                            <button class="btn btn-danger btn-sm" name="item_delete" value="{{cart_item.id}}">Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Order Summary -->
+        <div class="col-md-3">
+            <div class="card border"
+                 style="border-width: 2px; border-color: #dee2e6; min-height: 350px; position: sticky; top: 120px; margin-top: 40px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title fw-bold mb-3 text-uppercase">Order Summary</h5>
+                    <div class="bg-light p-3 rounded">
+                        <p class="d-flex justify-content-between mb-2">
+                            <span>Total:</span>
+                            <strong>${{cart.first.cart.total_cart_cost}}</strong>
+                        </p>
+                    </div>
+                    <div class="mt-4">
+                        <a href="{% url 'orders:checkout' %}" class="btn btn-primary btn-lg w-100 mb-3" style="box-shadow: none;">
+                            <i class="bi bi-box-arrow-right me-2"></i>Proceed to Checkout
+                        </a>
+                        <a href="/" class="btn btn-outline-secondary btn-lg w-100" style="box-shadow: none;">
+                            <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+</section>
+{% endblock content %}

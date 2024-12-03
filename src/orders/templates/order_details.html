@@ -1,0 +1,113 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<style>
+    .card {
+      border-radius: 12px;
+      transition: none;
+    }
+    .card:hover {
+      transform: none;
+    }
+</style>
+<body>
+<div class="container py-2">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            {% if error_message %}
+            <div class="alert alert-info mb-4 p-3 ">{{ error_message }}</div>
+            {% else %}
+            <div class="card order-card p-5">
+                <div class="text-center mb-1">
+                    <i class="fas fa-box-open order-header-icon"></i>
+                    <h1 class="order-header mt-3">Order Details</h1>
+                </div>
+
+                <div class="detail-row">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-receipt detail-icon"></i>
+                        <span>Order ID:</span>
+                    </div>
+                    <span class="detail-value">#{{ order.pk }}</span>
+                </div>
+                <div class="detail-row">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-user detail-icon"></i>
+                        <span>Recipient Name:</span>
+                    </div>
+                    <span class="detail-value">{{ order.get_recipients_full_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-phone detail-icon"></i>
+                        <span>Phone Number:</span>
+                    </div>
+                    <span class="detail-value">{{ order.recipients_phone_number }}</span>
+                </div>
+
+                <!-- Products Table -->
+                <div class="mt-4">
+                    <h4 class="mb-3">Order Items</h4>
+                    <table class="table product-table">
+                        <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for order_item in order.order_items.all %}
+                        <tr>
+                            <td class="text-truncate" style="max-width: 150px;">{{ order_item.product.name }}</td>
+                            <td>{{ order_item.quantity }}</td>
+                            <td>${{ order_item.price }}</td>
+                            <td>${{ order_item.total_item_cost }}</td>
+                        </tr>
+                        {% endfor %}
+                        <tr>
+                            <td class="text-truncate" style="max-width: 150px;">Cost of delivery</td>
+                            <td>1</td>
+                            <td>${{ order.cost_of_delivery }}</td>
+                            <td>${{ order.cost_of_delivery }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="detail-row">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-dollar-sign detail-icon"></i>
+                        <span>Total Price:</span>
+                    </div>
+                    <span class="detail-value">${{ order.total_order_amount }}</span>
+                </div>
+                <div class="detail-row">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-shipping-fast detail-icon"></i>
+                        <span>Status:</span>
+                    </div>
+                    <span class="badge-status bg-success text-white detail-value">{{ order.get_status_display }}</span>
+                </div>
+                <div class="detail-row">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-map-marker-alt detail-icon"></i>
+                        <span>Shipping Address:</span>
+                    </div>
+                    <div class="text-end detail-value">
+                        <span>{{ order.delivery_address }}</span><br>
+                    </div>
+                </div>
+
+                <div class="text-center action-buttons">
+                    <a href="/" class="btn btn-primary btn-lg">Continue shopping</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

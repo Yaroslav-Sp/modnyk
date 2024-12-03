@@ -15,9 +15,32 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+from debug_toolbar.toolbar import debug_toolbar_urls
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
 
-urlpatterns = [
-    path("admin/", admin.site.urls),
-]
+from accounts.views import (InfoAfterRegistration, UserActivationView,
+                            UserLogin, UserLogout, UserRegistration)
+
+urlpatterns = (
+    [
+        path("", include("shop.urls")),
+        path("login/", UserLogin.as_view(), name="login"),
+        path("logout/", UserLogout.as_view(), name="logout"),
+        path("registration/", UserRegistration.as_view(), name="registration"),
+        path("registration_info/", InfoAfterRegistration.as_view(), name="registration_info"),
+        path("activate/<str:uuid64>/<str:token>/", UserActivationView.as_view(), name="activate_user"),
+        path("oauth/", include("social_django.urls", namespace="social")),
+        path("api-auth/", include("rest_framework.urls")),
+        path("api/", include("api.urls")),
+        path("admin/", admin.site.urls),
+        path("products/", include("products.urls")),
+        path("cart/", include("cart.urls")),
+        path("customer/", include("accounts.urls")),
+        path("orders/", include("orders.urls")),
+    ]
+    + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    + debug_toolbar_urls()
+)
