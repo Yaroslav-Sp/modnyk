@@ -1,6 +1,8 @@
 from datetime import timedelta
 from pathlib import Path
 
+from celery.schedules import crontab
+
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
@@ -14,6 +16,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "drf_yasg",
     "rest_framework",
+    "django_celery_beat",
     "crispy_forms",
     "crispy_bootstrap5",
     "debug_toolbar",
@@ -118,6 +121,30 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+CELERY_BROKER_URL = "redis://redis"
+CELERY_BROKER_BACKEND = "redis://redis"
+
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+
+CELERY_BEAT_SCHEDULE = {
+    "create_random_product_task": {
+        "task": "shop.tasks.create_product",
+        "schedule": crontab(minute="*/1"),
+        "kwargs": {"count": 3},
+    },
+    "create_random_review_task": {
+        "task": "shop.tasks.create_review",
+        "schedule": crontab(minute="*/2"),
+        "kwargs": {"count": 10},
+    },
+    "create_random_customer_task": {
+        "task": "shop.tasks.create_customer",
+        "schedule": crontab(minute="*/1"),
+        "kwargs": {"count": 2},
+    },
+}
 INTERNAL_IPS = [
     "127.0.0.1",
 ]

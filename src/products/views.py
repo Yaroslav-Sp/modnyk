@@ -19,7 +19,7 @@ class ProductInfo(DetailView):
         context = super().get_context_data(**kwargs)
 
         reviews = self.object.reviews.all().order_by("-create_date")
-        paginator = Paginator(reviews, 20)
+        paginator = Paginator(reviews, 18)
         page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 

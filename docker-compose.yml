@@ -64,6 +64,57 @@ services:
     depends_on:
       - backend
 
+  redis:
+    image: redis
+    env_file:
+      - .env
+    restart: on-failure
+    depends_on:
+      - backend
+
+  celeryflower:
+    build: ./
+    container_name: celeryflower_container
+    command: ./commands/start_celery_flower.sh
+    restart: on-failure
+    volumes:
+      - ./src:/modnyk
+      - ./commands:/modnyk/commands
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - backend
+    ports:
+      - "5556:5555"
+
+
+  celerybeat:
+    build: ./
+    container_name: celerybeat_container
+    command: ./commands/start_celerybeat.sh
+    restart: on-failure
+    volumes:
+      - ./src:/modnyk
+      - ./commands:/modnyk/commands
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - backend
+
+  redisadmin:
+    image: redislabs/redisinsight
+    container_name: redisadmin
+    restart: on-failure
+    ports:
+      - "8001:8001"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
+
 
 
 volumes:
