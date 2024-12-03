@@ -6,21 +6,13 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost"]  # NOQA
+ALLOWED_HOSTS = ["localhost", 'ec2-13-53-130-108.eu-north-1.compute.amazonaws.com']  # NOQA
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("POSTGRES_DB"),  # NOQA
-        "USER": os.environ.get("POSTGRES_USER"),  # NOQA
-        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),  # NOQA
-        "HOST": os.environ.get("POSTGRES_HOST"),  # NOQA
-        "PORT": os.environ.get("POSTGRES_PORT"),  # NOQA
-    },
-    "default sqlite": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",  # NOQA
     },
