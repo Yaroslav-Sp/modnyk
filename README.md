@@ -1,7 +1,7 @@
 # modnyk
 Modnyk is an online clothing store built with the Django framework.
 
-Features
+# Features
 User can:
 - browse a list of products;
 - view detailed information about each product;
