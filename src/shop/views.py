@@ -1,21 +1,28 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import AnonymousUser
 from django.core.paginator import Paginator
+from django.db.models import Avg, Count
 from django.http import HttpRequest, HttpResponse
-from django.shortcuts import redirect
 from django.views.generic import ListView
 
+from common.views import FavoriteMixin
 from products.models import Product
 from shop.models import Favorite, PromotionBanner
 from shop.tasks import create_customer, create_product, create_review
 
 
-class IndexView(ListView):
+class IndexView(FavoriteMixin, ListView):
     model = Product
     template_name = "index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        paginator = Paginator(Product.objects.all(), 50)
+        paginator = Paginator(
+            Product.objects.prefetch_related("products_images", "reviews")
+            .annotate(average_rating=Avg("reviews__rating"), review_count=Count("reviews"))
+            .order_by("create_date"),
+            48,
+        )
         page_number = self.request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
@@ -27,48 +34,22 @@ class IndexView(ListView):
             context["favorite_boolean"] = Favorite.objects.filter(customer=self.request.user).values_list(
                 "product", flat=True
             )
-
         return context
 
-    def post(self, request, *args, **kwargs):
-        post_request = request.POST
-        product_id = post_request.get("product")
-        product = Product.objects.get(id=product_id)
 
-        general_params = {"customer": self.request.user, "product": product}
-
-        favorite_item = Favorite.objects.filter(**general_params)
-        if favorite_item.exists():
-            favorite_item.delete()
-        else:
-            Favorite.objects.create(**general_params)
-
-        return redirect("shop:index")
-
-
-class FavouritesView(ListView):
-    model = Favorite
+class FavouritesView(LoginRequiredMixin, FavoriteMixin, ListView):
     template_name = "wishlist.html"
     context_object_name = "favorites"
 
     def get_queryset(self):
-        if isinstance(self.request.user, AnonymousUser):
-            return Favorite.objects.none()
-        else:
-            return Favorite.objects.filter(customer=self.request.user)
+        return (
+            Product.objects.filter(favorites__customer=self.request.user)
+            .prefetch_related("products_images")
+            .annotate(average_rating=Avg("reviews__rating"), review_count=Count("reviews"))
+        )
 
-    def post(self, request, *args, **kwargs):
-        post_request = request.POST
-        product_id = post_request.get("product_delete")
-        product = Product.objects.get(id=product_id)
 
-        general_params = {"customer": self.request.user, "product": product}
-
-        favorite_item = Favorite.objects.filter(**general_params)
-        if favorite_item.exists():
-            favorite_item.delete()
-
-        return redirect("shop:favorites_list")
+# celery_views
 
 
 def product_generator(request: HttpRequest) -> HttpResponse:

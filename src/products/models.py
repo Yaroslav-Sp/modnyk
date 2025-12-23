@@ -1,8 +1,15 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE, SET_NULL, Avg, Count
 
 from common.models import BaseModel
 from reviews.models import Review
+
+
+class CategoryLevel(models.IntegerChoices):
+    GENDER_CLOTHES_TYPE = 0, "Gender clothes type"
+    MAIN_CLOTHES_TYPE = 1, "Main clothes type"
+    TYPE_CLOTHES = 2, "Type clothes"
 
 
 class Product(BaseModel):
@@ -15,7 +22,7 @@ class Product(BaseModel):
     brand = models.ForeignKey("products.Brand", on_delete=SET_NULL, null=True, related_name="products")
 
     def __str__(self):
-        return f"({self.pk}) {self.name}"
+        return f"№{self.pk} {self.name} - {self.category}"
 
     def average_rating(self):
         result = Review.objects.filter(product=self.pk).aggregate(Avg("rating"))
@@ -25,23 +32,90 @@ class Product(BaseModel):
         result = Review.objects.filter(product=self.pk).aggregate(Count("rating"))
         return result["rating__count"]
 
+    def category_heritability(self):
+        return f"{self.category.parent.parent.name} \u2B9E {self.category.parent.name} \u2B9E {self.category.name}"
+
     class Meta:
         ordering = ["-create_date"]
 
 
 class Category(BaseModel):
-    parent_category = models.ForeignKey("products.Category", on_delete=CASCADE, blank=True, null=True)
-    name = models.CharField(max_length=255)
-    category_level = models.SmallIntegerField(
-        choices=[(0, "Gender/Age"), (1, "Type_clothes")],
+    parent = models.ForeignKey(
+        "products.Category", on_delete=models.CASCADE, blank=True, null=True, related_name="children"
     )
+    name = models.CharField(max_length=255)
+    level = models.SmallIntegerField(choices=CategoryLevel.choices, editable=False)
 
     class Meta:
         verbose_name = "Category"
         verbose_name_plural = "Categories"
 
+    @classmethod
+    def get_history_for_categories(cls, categories, gender_name, main_category_name, sub_category_name):
+        result = []
+
+        for category in categories:
+            grandparent_name = category.parent.parent.name if category.parent and category.parent.parent else None
+
+            if gender_name:
+                if grandparent_name in gender_name:
+                    result.append(category)
+            else:
+                result.append(category)
+
+        result2 = []
+        for category in result:
+
+            parent_name = category.parent.name if category.parent else None
+
+            if main_category_name:
+                if parent_name in main_category_name:
+                    result2.append(category)
+            else:
+                result2.append(category)
+
+        result3 = []
+        for category in result2:
+
+            current_name = category.name
+
+            if sub_category_name:
+                if current_name in sub_category_name:
+                    result3.append(category)
+            else:
+                result3.append(category)
+
+        return [item.id for item in result3]
+
     def __str__(self):
-        return f"{self.parent_category} -> {self.name}"
+        if self.parent:
+            return (
+                f"Level {self.level} = {self.name}  -  [{self.parent.parent.name if self.parent.parent else None} -> "
+                f"{self.parent.name if self.parent else None}]"
+            )
+        return self.name
+
+    def clean(self):
+        if self.level == 0 and self.parent:
+            raise ValidationError("Main clothes type cannot have a parent category.")
+        if self.level in (1, 2) and not self.parent:
+            raise ValidationError("Type clothes must have a parent category.")
+        super().clean()
+
+    def get_children(self):
+        return Category.objects.filter(parent=self)
+
+    def get_descendant_categories(self):
+        descendants = []
+
+        def fetch_children(parent):
+            children = Category.objects.filter(parent=parent)
+            for child in children:
+                descendants.append(child)
+                fetch_children(child)
+
+        fetch_children(self)
+        return descendants
 
 
 class ProductImage(BaseModel):

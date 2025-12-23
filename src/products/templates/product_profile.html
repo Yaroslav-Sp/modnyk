@@ -56,10 +56,14 @@
                     </h5>
                     <a href="#reviews-container"
                        style="font-size: 0.8rem; margin: 0px; padding-top: 4px; text-decoration: none; color: inherit;">
-                        {{ product.count_reviews }}</a>
+                        {{ review_count }}</a>
                 </div>
             </div>
             <p>{{ product.description }}</p>
+            <!-- Category -->
+            <div class="mb-3">
+                <p class="form-label">Category : {{ product.category_heritability }}</p>
+            </div>
 
             <!-- Color -->
             <div class="mb-3">
@@ -91,11 +95,21 @@
             <!-- Add to Wishlist -->
             <form method="POST" class="col-1 ">
                 {% csrf_token %}
-                <button class="btn btn-outline-danger no-focus " type="submit" name="form_type" value="favorite_form"
+                <button class="btn btn-outline-danger no-focus" type="submit" name="form_type" value="favorite_form"
                         id="wishlist-heart" onclick="toggleLike(this)">
                     <i class="fa fa-heart"
                        style="font-size: 28px; color: {% if favorite_boolean %} #FF0000 {% else %} grey {% endif %};"></i>
                 </button>
+            </form>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-primary col-9" type="submit" style="margin-right:15px;">Add to Cart </a>
+            </form>
+            <!-- Add to Wishlist -->
+            <form method="POST" class="col-1 ">
+                {% csrf_token %}
+               <a href="{% url 'login' %}" class="btn btn-outline-danger no-focus" onclick="toggleLike(this)">
+                    <i class="fa fa-heart" style="font-size: 28px; color: grey;"></i>
+                </a>
             </form>
             {% endif %}
         </div>
@@ -109,9 +123,15 @@
     <div class="text-center">
         <h2 class="text-center mb-4">Customer Reviews about {{ product.name }}</h2>
         <!-- Create reviews -->
+        {% if user.is_authenticated %}
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
             Leave a Review
         </button>
+        {% else %}
+        <a href="{% url 'login' %}" class="btn btn-primary" >
+            Leave a Review
+        </a>
+        {% endif %}
         <br><br>
     </div>
 

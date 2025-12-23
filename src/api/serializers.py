@@ -36,12 +36,12 @@ class ColorSerializer(ModelSerializer):
 
 
 class CategorySerializer(ModelSerializer):
-    category_level = CharField(source="get_category_level_display")
-    parent_category = CharField(source="parent_category.name", read_only=True)
+    level = CharField(source="get_level_display")
+    parent = CharField(source="parent.name", read_only=True)
 
     class Meta:
         model = Category
-        fields = ["name", "parent_category", "category_level"]
+        fields = ["name", "parent", "level"]
 
 
 class ProductSerializer(ModelSerializer):

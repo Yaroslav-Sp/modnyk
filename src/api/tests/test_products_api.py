@@ -33,8 +33,9 @@ class TestApi(TestCase):
                 "name": "TestProduct",
                 "description": "This is a test product description.",
                 "category": {
-                    "name": "TestCategory",
-                    "category_level": "Type_clothes",
+                    "name": "Shirts",
+                    "level": "Type clothes",
+                    "parent": "Outerwear",
                 },
                 "color": {"name": "Red"},
                 "size": [{"name": "M", "description": "Medium size"}],
@@ -74,8 +75,8 @@ class TestApi(TestCase):
     def test_product_list(self):
         self.user.is_superuser = True
         self.client.force_authenticate(user=self.user)
-        response = self.client.get(reverse("api:product_list"))
 
+        response = self.client.get(reverse("api:product_list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.data,
@@ -84,8 +85,9 @@ class TestApi(TestCase):
                     "name": "TestProduct",
                     "description": "This is a test product description.",
                     "category": {
-                        "name": "TestCategory",
-                        "category_level": "Type_clothes",
+                        "name": "Shirts",
+                        "level": "Type clothes",
+                        "parent": "Outerwear",
                     },
                     "color": {"name": "Red"},
                     "size": [{"name": "M", "description": "Medium size"}],

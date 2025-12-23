@@ -1,14 +1,25 @@
 from decimal import Decimal
 
-from products.models import Brand, Category, Color, Product, Size
+from products.models import (Brand, Category, CategoryLevel, Color, Product,
+                             Size)
 
 
 def sample_category():
-    default = {
-        "name": "TestCategory",
-        "category_level": "1",
-    }
-    return Category.objects.create(**default)
+    gender_category, _ = Category.objects.get_or_create(
+        name="Men",
+        level=CategoryLevel.GENDER_CLOTHES_TYPE,
+    )
+    main_category, _ = Category.objects.get_or_create(
+        name="Outerwear",
+        level=CategoryLevel.MAIN_CLOTHES_TYPE,
+        parent=gender_category,
+    )
+    subcategory, _ = Category.objects.get_or_create(
+        name="Shirts",
+        level=CategoryLevel.TYPE_CLOTHES,
+        parent=main_category,
+    )
+    return subcategory
 
 
 def sample_product(category):

@@ -1,0 +1,236 @@
+{% extends "index.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+<main class="mt-4 pt-4">
+    <div class="container">
+        <div class="row">
+            <!-- Filters -->
+            <aside class="col-md-3">
+                <div class="filters">
+                    <h4>Filters</h4>
+                    <form method="GET" id="filter_form">
+                    <!-- Sex -->
+                    <div class="filter-section">
+                        <div class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#filterGender" aria-expanded="true">
+                            Gender <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="collapse show filter-content" id="filterGender">
+                            {% for gender in genders %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="gender" value="{{gender.name}}" id="{{gender.id}}"
+                                 {% if gender.name in selected_filters %}checked{% endif %}>
+                                <label class="form-check-label" for="{{gender.id}}">{{gender.name}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Category -->
+                        <div class="filter-section">
+                        <div class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#filterCategory" aria-expanded="true">
+                            Category <i class="fas fa-chevron-down"></i>
+                        </div>
+                            <div class="collapse show filter-content" id="filterCategory">
+                    {% for category in categories_level_1 %}
+                        <div class="form-check " >
+                            <div class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#filter{{ category.0 }}" aria-expanded="true">
+                                <input class="form-check-input" type="checkbox" name="main_category" value="{{ category.0 }}" id="{{ category.0 }}"
+                                {% if category.0 in selected_filters %}checked{% endif %}>
+                                <label class="form-check-label" for="{{ category.0 }}">{{ category.0 }}</label>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="filter-section">
+                                <div class="collapse filter-content" id="filter{{ category.0 }}">
+                                    {% for subcategory in category.1 %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="sub_category" value="{{ subcategory }}|{{ category.0 }}" id="{{ subcategory }}"
+                                        {% if subcategory in selected_filters and category.0 in control_field %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ subcategory }}">{{ subcategory }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                            </div>
+                            </div>
+
+                    <!-- Price -->
+                    <div class="filter-section">
+                        <div class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#filterPrice" aria-expanded="true">
+                            Price <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="collapse show filter-content" id="filterPrice">
+                            <div class="price-range">
+                                <input type="number" min="0" max="2000" name="min_price" id="priceMin" placeholder="Min" value="{{selected_min_price}}">
+                                <span class="price-separator">-</span>
+                                <input type="number" min="0" max="20000" name="max_price"  id="priceMax" placeholder="Max" value="{{selected_max_price}}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Size -->
+                    <div class="filter-section">
+                        <div class="toggle-btn" data-bs-toggle="collapse" data-bs-target="#filterSize" aria-expanded="true">
+                            Size <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="collapse show filter-content" id="filterSize">
+                            {% for size in sizes %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="size" value="{{size.name}}" id="{{size.id}}"
+                                {% if size.name in selected_filters %} checked {% endif %}>
+                                <label class="form-check-label" for="{{size.id}}">{{size.name}}</label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block mt-3" form="filter_form">Submit</button>
+                    </div>
+
+                </div>
+
+            </aside>
+
+            <!-- Products -->
+            <section class="col-md-9" id="products-container">
+                <div class="filters mb-4 d-flex align-items-center justify-content-between"
+     style="position: sticky; top: 120px; background-color: white; z-index: 1000; padding: 10px 15px;">
+    <div class="row w-100 align-items-center">
+
+        <div class="col-12 col-md-2 d-flex align-items-center">
+            <h4 class="mb-0" style="font-size: 15px;">{{ products_count }} items found</h4>
+        </div>
+
+
+        <div class="col-12 col-md-8">
+            <div class="selected-filters d-flex flex-wrap align-items-center gap-2">
+                <a href="/products" class="badge rounded-pill text-bg-secondary d-flex align-items-center px-2 py-1">
+                    Скасувати <i class="fas fa-times ms-2"></i>
+                </a>
+                {% for items in selected_filters %}
+                <span class="badge rounded-pill text-bg-light d-flex align-items-center px-2 py-1">
+                    {{ items }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+
+
+        <form id="sortForm" action="/your-action-url" method="GET">
+            <select id="sortBy" class="form-select w-auto" name="sort_by" onchange="document.getElementById('filter_form').submit()">
+                <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>By rating</option>
+                <option value="price_desc"{% if sort_by == 'price_desc' %}selected{% endif %}>By price (from max)</option>
+                <option value="price_asc"{% if sort_by == 'price_asc' %}selected{% endif %}>By price ( from min)</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        {% for product in products %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0" id="product{{product.id}}" style="scroll-margin-top: 195px;">
+                    <!-- Like button form -->
+                    {% if user.is_authenticated %}
+                    <form method="POST" class="position-absolute top-0 end-0 mt-2 me-2" action="#product{{product.id}}">
+                        {% csrf_token %}
+                        <button class="btn btn-light like-btn" name="favorite_form" value="{{product.id}}"
+                                onclick="toggleLike(this)">
+                            <i class="bi bi-heart-fill"
+                               style="color: {% if product.id in favorite_boolean %}#FF0000{% else %}grey{% endif %};"></i>
+                        </button>
+                    </form>
+                    {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-light like-btn position-absolute top-0 end-0 mt-2 me-2" onclick="toggleLike(this)">
+                        <i class="bi bi-heart-fill" style="color: grey;"></i>
+                    </a>
+                    {% endif %}
+                    <!-- Images -->
+                    <a href="{% url 'products:product_info' product.pk %}">
+                        {% if product.products_images.all %}
+                        <img src="{{ product.products_images.all.first.image.url }}" class="card-img-top rounded-top"
+                             alt="product.name" style="object-fit: cover; height: 300px;">
+                        {% else %}
+                        <img src="{% static 'img/default_product.png' %}" class="card-img-top rounded-top"
+                             alt="default_photo" style="object-fit: cover; height: 300px;">
+                        {% endif %}
+                    </a>
+                    <!-- Product data -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-truncate">{{ product.name }}</h5>
+                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                            <p class="card-text text-danger fw-bold mb-0">${{ product.price }}</p>
+                            <div class="d-flex align-items-center">
+                                <!-- Product rating -->
+
+                                <h5 class="card-title"
+                                    style="padding-right: 5px; margin: 0px; display: flex; justify-content: center; align-items: center;">
+                <span class="fa fa-star {% if product.average_rating >= 0.5 %} checked {% endif %}"
+                      style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 1.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 2.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 3.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                    <span class="fa fa-star {% if product.average_rating >= 4.5 %} checked {% endif %}"
+                                          style="font-size: 0.7rem; margin-right: 3px;"></span>
+                                </h5>
+
+                                <a href="{% url 'products:product_info' product.pk %}#reviews-container"
+                                   class="text-decoration-none text-muted small">{{ product.review_count }}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+                    </div>
+
+
+                    <div class="container mt-5 d-flex justify-content-center">
+        {% if products.has_previous %}
+        <a class="btn btn-outline-primary me-2" href="?page={{ products.previous_page_number }}#products-container">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        {% endif %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                Page {{ products.number }} of {{ products.paginator.num_pages }}
+            </button>
+            {% if products.paginator.num_pages > 1 %}
+            <ul class="dropdown-menu">
+                {% if products.has_previous %}
+                <li><a class="dropdown-item" href="?page=1#products-container">First page</a></li>
+                {% endif %}
+                {% if products.has_next %}
+                <li><a class="dropdown-item" href="?page={{ products.paginator.num_pages }}#products-container">Last
+                    page</a></li>
+                {% endif %}
+            </ul>
+            {% endif %}
+        </div>
+        {% if products.has_next %}
+        <a class="btn btn-outline-primary ms-2" href="?page={{ products.next_page_number }}#products-container">
+            <i class="bi bi-arrow-right"></i>
+        </a>
+        {% endif %}
+    </div>
+            </section>
+        </div>
+    </div>
+</main>
+
+<script>
+    document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            btn.classList.toggle('collapsed');
+        });
+    });
+    function toggleHidden(checkbox) {
+    const hiddenField = document.getElementById('hidden_field');
+    hiddenField.disabled = !checkbox.checked;
+}
+</script>
+{% endblock content %}

@@ -21,16 +21,25 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 
+from accounts.views import (InfoAfterRegistration, UserActivationView,
+                            UserLogin, UserLogout, UserRegistration)
+
 urlpatterns = (
     [
         path("", include("shop.urls")),
+        path("login/", UserLogin.as_view(), name="login"),
+        path("logout/", UserLogout.as_view(), name="logout"),
+        path("registration/", UserRegistration.as_view(), name="registration"),
+        path("registration_info/", InfoAfterRegistration.as_view(), name="registration_info"),
+        path("activate/<str:uuid64>/<str:token>/", UserActivationView.as_view(), name="activate_user"),
+        path("oauth/", include("social_django.urls", namespace="social")),
         path("api-auth/", include("rest_framework.urls")),
         path("api/", include("api.urls")),
         path("admin/", admin.site.urls),
         path("products/", include("products.urls")),
         path("cart/", include("cart.urls")),
         path("customer/", include("accounts.urls")),
-        path("order/<int:pk>/", include("orders.urls")),
+        path("orders/", include("orders.urls")),
     ]
     + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     + debug_toolbar_urls()

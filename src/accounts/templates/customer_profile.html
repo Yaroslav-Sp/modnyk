@@ -31,6 +31,11 @@
                 <i class="bi bi-chat-dots"></i> My reviews
             </button>
         </li>
+        <li class="nav-item">
+    <a href="{% url 'logout' %}" class="nav-link text-danger">
+        <i class="bi bi-box-arrow-right"></i> Logout
+    </a>
+</li>
     </ul>
     {% if user.is_authenticated %}
     <div class="tab-content mt-3" id="profileTabsContent">
